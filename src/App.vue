@@ -1,26 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>{{ appName }}</h1>
+    <ul>
+        <li
+            v-for="(tab, index) in tabs"
+            :key="index"
+        >{{ tab.name }}</li>
+    </ul>
+    <input v-model="tabName" type="text" />
+    <button @click="addTab">add tab</button>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { storeToRefs } from 'pinia';
+import { useTabsStore } from './store/tabs';
+// import { useVModel } from './composable/useVModel';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+    setup () {
+        const tabsStore = useTabsStore();
+        const { tabs, tabName } = storeToRefs(tabsStore);
+
+        const addTab = () => {
+            tabName.value.length ? tabs.value.push({ name: tabName.value }) : void 0;
+        }
+
+        return {
+            tabs,
+            appName: 'Example application',
+
+            tabName,
+            addTab,
+        }
+    }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
