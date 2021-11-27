@@ -4,32 +4,54 @@
         <li
             v-for="(tab, index) in tabs"
             :key="index"
-        >{{ tab.name }}</li>
+        ><a :class="{'active': index === activeTabIndex}"
+            @click="setActive(index)"
+        >{{ tab.name }}</a></li>
     </ul>
     <input v-model="tabName" type="text" />
-    <button @click="addTab">add tab</button>
+    <button @click="addAnotherTab">add tab</button>
 </template>
 
 <script>
+import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useTabsStore } from './store/tabs';
-// import { useVModel } from './composable/useVModel';
+
+const MAX_TABS_COUNT = 5;
 
 export default {
     setup () {
         const tabsStore = useTabsStore();
-        const { tabs, tabName } = storeToRefs(tabsStore);
+        const {
+            tabs,
+            tabsCount,
+            activeTabIndex,
+        } = storeToRefs(tabsStore);
 
-        const addTab = () => {
-            tabName.value.length ? tabs.value.push({ name: tabName.value }) : void 0;
+        const tabName = ref('');
+
+        const isEnoughTabsCount = computed(() => {
+            return tabsCount.value + 1 > MAX_TABS_COUNT
+        });
+
+        const addAnotherTab = () => {
+            if(isEnoughTabsCount.value || !tabName.value.length) return;
+            tabsStore.addTab(tabName.value);
+        }
+
+        const setActive = (index) => {
+            tabsStore.setActiveTab(index);
         }
 
         return {
             tabs,
+            activeTabIndex,
+
             appName: 'Example application',
 
             tabName,
-            addTab,
+            addAnotherTab,
+            setActive,
         }
     }
 }

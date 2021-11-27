@@ -7,16 +7,19 @@ export const useTabsStore = defineStore('tabs', {
             { name: 'tasks' },
             { name: 'users' },
         ],
-        tabName: '',
+        activeTabIndex: 0
     }),
     getters: {
-        getTabs () {
-            return this.tabs;
+        tabsCount () {
+            return this.tabs.length;
         }
     },
     actions: {
         addTab (name) {
             this.tabs.push({ name });
+        },
+        setActiveTab (index) {
+            this.activeTabIndex = index;
         },
     },
 })
